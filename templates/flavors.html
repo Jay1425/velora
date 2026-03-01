@@ -54,6 +54,18 @@
         .flavor-card:hover {
             transform: translateY(-4px);
         }
+        
+        .flavor-image-container {
+            overflow: hidden;
+        }
+        
+        .flavor-image {
+            transition: transform 0.4s ease;
+        }
+        
+        .flavor-card:hover .flavor-image {
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
@@ -112,23 +124,25 @@
                 
                 {% for flavour in flavours %}
                 <div class="flavor-card bg-white rounded-lg shadow-md overflow-hidden">
-                    <div class="h-60 overflow-hidden">
+                    <div class="flavor-image-container h-64 overflow-hidden border-b-2 border-gray-100">
                         <img src="{{ url_for('static', filename='img/flavours/' + flavour.image) }}" 
                              alt="{{ flavour.name }}"
                              loading="lazy"
-                             class="w-full h-full object-cover">
+                             class="flavor-image w-full h-full object-cover">
                     </div>
                     
                     <div class="p-6">
-                        <h3 class="text-2xl font-bold text-gray-800 mb-3">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-2">
                             {{ flavour.name }}
                         </h3>
+                        
+                        <div class="w-16 h-0.5 bg-saffron mb-4"></div>
                         
                         <p class="text-gray-600 mb-4 leading-relaxed min-h-[80px]">
                             {{ flavour.description }}
                         </p>
                         
-                        <p class="text-xl font-bold text-saffron mb-4">
+                        <p class="text-2xl font-extrabold text-saffron mb-4">
                             {{ flavour.price }}
                         </p>
                         

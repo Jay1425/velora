@@ -43,9 +43,14 @@
                     <h1 class="text-4xl font-bold text-saffron">Velora Admin</h1>
                     <p class="text-gray-600 mt-1">Order Inquiry Dashboard</p>
                 </div>
-                <a href="/" class="bg-saffron text-white px-6 py-2 rounded-md font-medium hover:bg-opacity-90 transition">
-                    Back to Website
-                </a>
+                <div class="flex space-x-4">
+                    <a href="/" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-md font-medium hover:bg-gray-300 transition">
+                        Back to Website
+                    </a>
+                    <a href="/admin/logout" class="bg-saffron text-white px-6 py-2 rounded-md font-medium hover:bg-opacity-90 transition">
+                        Logout
+                    </a>
+                </div>
             </div>
         </div>
     </header>
@@ -53,10 +58,42 @@
     <!-- Stats Section -->
     <section class="py-8 bg-cream">
         <div class="container mx-auto px-6">
-            <div class="bg-white rounded-lg shadow-md p-6 text-center">
-                <p class="text-5xl font-bold text-saffron mb-2">{{ inquiries|length }}</p>
-                <p class="text-gray-700 text-lg">Total Inquiries Received</p>
+            
+            <!-- Main Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                    <p class="text-4xl font-bold text-saffron mb-2">{{ analytics.total_count }}</p>
+                    <p class="text-gray-700 text-sm font-semibold">Total Inquiries</p>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                    <p class="text-4xl font-bold text-saffron mb-2">{{ analytics.inquiries_this_month }}</p>
+                    <p class="text-gray-700 text-sm font-semibold">This Month</p>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                    <p class="text-2xl font-bold text-saffron mb-2">{{ analytics.most_requested_flavor }}</p>
+                    <p class="text-gray-700 text-sm font-semibold">Most Requested</p>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                    <p class="text-4xl font-bold text-saffron mb-2">{{ analytics.avg_quantity }} kg</p>
+                    <p class="text-gray-700 text-sm font-semibold">Avg Quantity</p>
+                </div>
             </div>
+            
+            <!-- Filter Dropdown -->
+            <div class="bg-white rounded-lg shadow-md p-4">
+                <div class="flex items-center justify-between">
+                    <p class="text-gray-700 font-semibold">Filter Inquiries:</p>
+                    <select onchange="window.location.href='/admin?filter=' + this.value" class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:border-saffron">
+                        <option value="all" {% if current_filter == 'all' %}selected{% endif %}>All Time</option>
+                        <option value="month" {% if current_filter == 'month' %}selected{% endif %}>This Month</option>
+                        <option value="today" {% if current_filter == 'today' %}selected{% endif %}>Today</option>
+                    </select>
+                </div>
+            </div>
+            
         </div>
     </section>
 

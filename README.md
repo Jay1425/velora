@@ -5,6 +5,27 @@ Part of the legacy of **Rasik Pan & Cold Drinks**, established **04 April 1983**
 
 ---
 
+## ⚠️ SECURITY NOTICE
+
+**This repository contains production-grade security implementations:**
+
+🔒 **Never commit these files to version control:**
+- `.env` (contains real credentials)
+- `*.db` (customer database)
+- `instance/` (Flask instance folder)
+- `.venv/` (virtual environment)
+
+✅ **Safe to commit:**
+- `.env.example` (template only)
+- All code and templates
+- Documentation files
+
+📖 **Setup Guide:** See [Quick Start](#-quick-start) below  
+🔐 **Security Details:** See [SECURITY_IMPLEMENTATION.md](SECURITY_IMPLEMENTATION.md)  
+🤝 **Contributing:** See [CONTRIBUTING.md](CONTRIBUTING.md)
+
+---
+
 ## 🌟 Overview
 
 Velora is a minimal, production-ready D2C dessert brand website focused on:
@@ -13,6 +34,7 @@ Velora is a minimal, production-ready D2C dessert brand website focused on:
 - **SQLite database** for storing customer inquiries
 - **Admin dashboard** for managing orders
 - **Clean, boutique aesthetic** without flashy animations
+- **Production-grade security** with enterprise-level authentication
 
 ---
 
@@ -84,7 +106,71 @@ velora/
 
 ## 🚀 Quick Start
 
-### 1. Install Dependencies
+### 1. Set Environment Variables
+
+**Required for Admin Access:**
+
+**IMPORTANT:** Admin passwords are now stored as hashed values for security.
+
+**Step 1: Generate Password Hash**
+
+```bash
+# Run this Python command to generate a secure password hash
+python -c "from werkzeug.security import generate_password_hash; print(generate_password_hash('your_password_here'))"
+```
+
+This will output a hash like:
+```
+scrypt:32768:8:1$abc123...xyz789
+```
+
+**Step 2: Configure Environment Variables**
+
+Create a `.env` file in your project root:
+
+```env
+# Velora Admin Configuration
+ADMIN_USERNAME=your_admin_username
+ADMIN_PASSWORD_HASH=scrypt:32768:8:1$your_generated_hash_here
+SECRET_KEY=your-random-secret-key-here
+```
+
+**OR use system environment variables:**
+
+```bash
+# Windows PowerShell
+setx ADMIN_USERNAME "your_admin_username"
+setx ADMIN_PASSWORD_HASH "scrypt:32768:8:1$your_generated_hash_here"
+setx SECRET_KEY "your-random-secret-key-here"
+
+# Windows CMD
+set ADMIN_USERNAME=your_admin_username
+set ADMIN_PASSWORD_HASH=scrypt:32768:8:1$your_generated_hash_here
+set SECRET_KEY=your-random-secret-key-here
+
+# Mac/Linux
+export ADMIN_USERNAME="your_admin_username"
+export ADMIN_PASSWORD_HASH="scrypt:32768:8:1$your_generated_hash_here"
+export SECRET_KEY="your-random-secret-key-here"
+```
+
+**Generate a strong SECRET_KEY:**
+
+```bash
+python -c "import os; print(os.urandom(24).hex())"
+```
+
+**Optional:**
+
+```bash
+# Enable debug mode (default: False in production)
+setx FLASK_DEBUG "true"  # Windows
+export FLASK_DEBUG="true"  # Mac/Linux
+```
+
+**Note:** Using `.env` file (recommended for development) - no need to restart terminal. For `setx` method, restart your terminal or IDE.
+
+### 2. Install Dependencies
 
 ```bash
 # Activate virtual environment (if using one)
@@ -96,7 +182,7 @@ source .venv/bin/activate   # Mac/Linux
 pip install -r requirements.txt
 ```
 
-### 2. Add Product Images
+### 3. Add Product Images
 
 Place these images in `static/img/flavours/`:
 - `classic-mango.jpg`
@@ -109,7 +195,7 @@ Place these images in `static/img/flavours/`:
 - Size: 800x800px (square, high quality)
 - Clean, well-lit product photos
 
-### 3. Run the Application
+### 4. Run the Application
 
 ```bash
 python app.py
@@ -129,8 +215,10 @@ The SQLite database (`velora.db`) will be created automatically on first run.
 | `/legacy` | Our Legacy | Brand storytelling since 1983 |
 | `/flavors` | Flavors | 4 product catalog with pricing |
 | `/bulk` | Bulk Orders | Wedding & corporate event info |
-| `/contact` | Contact Form | Customer inquiry form (with database) |
-| `/admin` | Admin Dashboard | View all inquiries |
+| `/contact` | Contact Form | Customer inquiry form (with WhatsApp redirect) |
+| `/admin` | Admin Dashboard | Protected analytics & inquiry management |
+| `/admin/login` | Admin Login | Secure authentication page |
+| `/admin/logout` | Admin Logout | Secure session termination |
 
 ---
 
@@ -153,20 +241,145 @@ The SQLite database (`velora.db`) will be created automatically on first run.
 
 ## 🔐 Admin Dashboard
 
-**Access:** `/admin`
+**Access:** `/admin` (Protected - Login Required)
 
-**Features:**
-- View all customer inquiries
-- Sort by latest first
-- Display total inquiry count
-- Clean table layout with:
-  - Customer name & phone (clickable)
-  - Flavor & quantity
+**Login:** `/admin/login`
+
+### Production-Grade Security
+
+The Velora admin panel implements **enterprise-level security** with multiple layers of protection.
+
+### Setup
+
+**1. Generate Password Hash:**
+
+```bash
+python -c "from werkzeug.security import generate_password_hash; print(generate_password_hash('YourSecurePassword123!'))"
+```
+
+**2. Configure Credentials in `.env` file:**
+
+```env
+ADMIN_USERNAME=velora_admin
+ADMIN_PASSWORD_HASH=scrypt:32768:8:1$your_hash_here
+SECRET_KEY=your-random-secret-key-here
+```
+
+### Security Features
+
+**🔒 Password Security:**
+- ✅ Werkzeug scrypt hashing (NOT plain text)
+- ✅ Passwords never stored or compared in plain text
+- ✅ Industry-standard password hashing
+
+**🛡️ CSRF Protection:**
+- ✅ Flask-WTF CSRF tokens on all forms
+- ✅ Prevents cross-site request forgery attacks
+- ✅ Automatic token validation
+
+**⏱️ Rate Limiting & Lockout:**
+- ✅ Maximum 5 failed login attempts
+- ✅ 15-minute lockout after 5 failures
+- ✅ Remaining attempts displayed in UI
+- ✅ Lockout timer shown to user
+
+**🍪 Secure Session Configuration:**
+- ✅ HTTPOnly cookies (JavaScript cannot access)
+- ✅ Secure flag in production (HTTPS only)
+- ✅ SameSite=Lax prevents CSRF
+- ✅ 30-minute session timeout
+
+**📋 Security Logging:**
+- ✅ All login attempts logged with IP address
+- ✅ Failed attempts tracked with timestamps
+- ✅ Admin actions logged for audit trail
+- ✅ Lockout events recorded
+
+**🔐 Security Headers:**
+- ✅ X-Frame-Options: DENY (prevents clickjacking)
+- ✅ X-Content-Type-Options: nosniff
+- ✅ Referrer-Policy: no-referrer
+- ✅ Content-Security-Policy configured
+- ✅ No-cache headers on admin pages
+
+**🌐 HTTPS Enforcement:**
+- ✅ Automatic HTTP → HTTPS redirect in production
+- ✅ Disabled in debug mode for local development
+
+### Dashboard Features
+
+- **Analytics Cards:**
+  - Total inquiries
+  - This month's inquiries
+  - Most requested flavor
+  - Average order quantity
+  
+- **Inquiry Filters:**
+  - All Time
+  - This Month
+  - Today
+  
+- **Data Table:**
+  - Customer details (name, phone)
+  - Order information (flavor, quantity)
   - Event date
-  - Custom message
-  - Submission timestamp
+  - Custom messages
+  - Timestamps
 
-**Note:** No authentication required (add authentication for production use).
+### Access Flow
+
+1. Visit `/admin` → Redirects to `/admin/login` if not authenticated
+2. Login with credentials
+   - Failed attempts show remaining tries
+   - After 5 failures: 15-minute lockout
+3. Successful login grants 30-minute session
+4. Click "Logout" to securely end session (clears all session data)
+
+### Security Best Practices
+
+**For Production:**
+
+1. **Use Strong Passwords:**
+   - Minimum 12 characters
+   - Mix uppercase, lowercase, numbers, symbols
+   - Never reuse passwords
+
+2. **Secure Your `.env` File:**
+   - Add `.env` to `.gitignore` (already done)
+   - Never commit credentials to version control
+   - Use different passwords for dev/production
+
+3. **Enable HTTPS:**
+   - Required for secure cookies
+   - Use SSL certificate in production
+   - Flask auto-redirects HTTP to HTTPS
+
+4. **Monitor Logs:**
+   - Check admin access logs regularly
+   - Watch for suspicious login patterns
+   - Track failed login attempts
+
+5. **Regular Security Updates:**
+   - Keep Flask and dependencies updated
+   - Rotate SECRET_KEY periodically
+   - Review security logs monthly
+
+### Troubleshooting
+
+**"Admin credentials not configured"**
+- Check `.env` file exists in project root
+- Verify `ADMIN_USERNAME` and `ADMIN_PASSWORD_HASH` are set
+- Ensure password is **hashed**, not plain text
+
+**"Account temporarily locked"**
+- Wait 15 minutes after 5 failed attempts
+- Clear browser cookies if needed
+- Check you're using the correct password
+
+**CSRF Token Error**
+- Ensure Flask-WTF is installed: `pip install Flask-WTF`
+- Clear browser cache and cookies
+- Check CSRF is enabled in `app.py`
 
 ---
 
@@ -241,10 +454,44 @@ Update footer in all template files:
 
 ---
 
+## � Security Features
+
+The Velora admin panel includes enterprise-grade security:
+
+**Authentication:**
+- Session-based login system with `@admin_required` decorator
+- Credentials stored in environment variables (never hardcoded)
+- Secure session management with Flask server-side sessions
+
+**Protection Measures:**
+- Rate limiting: Maximum 5 failed login attempts per session
+- No-cache headers on all admin pages
+- Secure logout with complete session clearing
+- Failed attempt counter resets on successful login
+
+**Best Practices:**
+- SECRET_KEY from environment or auto-generated
+- Debug mode disabled by default in production
+- Environment variable validation
+- Graceful error handling for missing credentials
+
+**Production Security Recommendations:**
+- Use HTTPS/SSL in production
+- Set strong SECRET_KEY (24+ random bytes)
+- Use strong admin passwords (12+ characters, mixed case, numbers, symbols)
+- Consider adding IP whitelisting for admin access
+- Regularly backup the SQLite database
+- Monitor `velora.db` file permissions
+
+---
+
 ## 🔧 Technical Stack
 
 - **Framework:** Flask 3.0.0
 - **Database:** Flask-SQLAlchemy 3.1.1 with SQLite
+- **Security:** Flask-WTF 1.2.1 (CSRF Protection)
+- **Password Hashing:** Werkzeug 3.0.1 (scrypt)
+- **Environment:** python-dotenv 1.0.0
 - **Templating:** Jinja2
 - **CSS:** Tailwind CSS (via CDN)
 - **Fonts:** Google Fonts (Cormorant Garamond, Inter)
@@ -256,16 +503,51 @@ Update footer in all template files:
 
 Before going live:
 
+**Website Content:**
 - [ ] Add real product images (4 flavors)
 - [ ] Update contact information in footer
-- [ ] Add authentication to `/admin` route
-- [ ] Set `app.config['SECRET_KEY']` to a secure random string
-- [ ] Change `debug=True` to `debug=False` in production
-- [ ] Set up proper database backups
 - [ ] Add `robots.txt` and `sitemap.xml` for SEO
-- [ ] Configure environment variables for sensitive data
-- [ ] Test inquiry form submission
-- [ ] Verify admin dashboard displays inquiries correctly
+
+**Security Configuration (CRITICAL):**
+- [x] ✅ Production-grade authentication with password hashing
+- [x] ✅ CSRF protection enabled (Flask-WTF)
+- [x] ✅ Rate limiting with 15-minute lockout
+- [x] ✅ Secure session configuration (HTTPOnly, Secure, SameSite)
+- [x] ✅ Security headers implemented
+- [x] ✅ HTTPS enforcement in production
+- [x] ✅ Admin access logging with IP tracking
+- [x] ✅ Debug mode disabled by default
+
+**Production Environment Setup:**
+- [ ] Generate production password hash:
+  ```bash
+  python -c "from werkzeug.security import generate_password_hash; print(generate_password_hash('YourProductionPassword'))"
+  ```
+- [ ] Set environment variables on production server:
+  - `ADMIN_USERNAME` (e.g., velora_admin)
+  - `ADMIN_PASSWORD_HASH` (hashed password from above)
+  - `SECRET_KEY` (generate: `python -c "import os; print(os.urandom(24).hex())"`)
+  - `FLASK_DEBUG=false` (explicitly disable debug mode)
+- [ ] Ensure `.env` file is NOT deployed (use server env vars)
+- [ ] SSL/HTTPS certificate configured and active
+- [ ] Test HTTPS redirect (HTTP → HTTPS)
+
+**Testing:**
+- [ ] Test inquiry form submission with WhatsApp redirect
+- [ ] Verify admin login with correct credentials
+- [ ] Test failed login attempts (should lock after 5)
+- [ ] Verify 15-minute lockout functionality
+- [ ] Test admin logout and session clearing
+- [ ] Test admin analytics dashboard with filters
+- [ ] Verify CSRF protection on forms
+- [ ] Test on mobile devices
+
+**Deployment & Monitoring:**
+- [ ] Set up proper database backups (daily recommended)
+- [ ] Configure database file permissions (chmod 600 velora.db)
+- [ ] Review admin access logs after deployment
+- [ ] Monitor failed login attempts
+- [ ] Document admin credentials securely (password manager)
 
 ---
 
@@ -287,12 +569,28 @@ Before going live:
 
 ## 🎯 Key Features
 
-- **Inquiry-Based Ordering:** No shopping cart — customers submit inquiries
+**Business & Customer Experience:**
+- **Inquiry-Based Ordering:** No shopping cart — customers submit inquiries with WhatsApp auto-redirect
 - **Personal Touch:** "We respond within 24 hours" messaging throughout
 - **Wedding Focus:** Dedicated bulk order page emphasizing celebrations
 - **Legacy Storytelling:** Strong brand narrative dating back to 1983
-- **Clean Admin Panel:** Simple dashboard to manage customer inquiries
+- **WhatsApp Integration:** Automatic redirect after form submission with pre-filled details
 - **Mobile-First Design:** Fully responsive across all devices
+
+**Production-Grade Security:**
+- **Password Hashing:** Werkzeug scrypt hashing (passwords never stored in plain text)
+- **CSRF Protection:** Flask-WTF tokens prevent cross-site attacks
+- **Rate Limiting:** 5 login attempts max, 15-minute lockout protection
+- **Secure Sessions:** HTTPOnly, Secure, SameSite cookies with 30-min timeout
+- **Security Headers:** X-Frame-Options, CSP, nosniff, no-referrer
+- **HTTPS Enforcement:** Automatic redirect in production
+- **Audit Logging:** IP tracking, timestamps, failed attempt monitoring
+
+**Admin Dashboard:**
+- **Data-Driven Insights:** Most requested flavors, average quantities, monthly trends
+- **Analytics Cards:** Total inquiries, monthly stats, flavor analysis
+- **Inquiry Filters:** All time, this month, today
+- **Secure Access:** Session-based authentication with automatic timeout
 
 ---
 
