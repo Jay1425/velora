@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velora - Premium Shrikhand for Celebrations | Kutiyana, Gujarat</title>
+    
+    <meta name="description" content="Velora offers premium handcrafted shrikhand for weddings and celebrations. Serving Kutiyana since 1983 with legacy and tradition.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F5E6C8;
+        }
+        
+        h1, h2, h3, h4 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+        }
+        
+        .text-saffron {
+            color: #C96A00;
+        }
+        
+        .bg-saffron {
+            background-color: #C96A00;
+        }
+        
+        .bg-cream {
+            background-color: #F5E6C8;
+        }
+        
+        .hover-saffron:hover {
+            background-color: #A85800;
+        }
+        
+        .btn-primary {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(201, 106, 0, 0.25);
+        }
+        
+        .flavor-card {
+            transition: transform 0.3s ease;
+        }
+        
+        .flavor-card:hover {
+            transform: translateY(-4px);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/" class="text-3xl font-bold text-saffron">Velora</a>
+                
+                <div class="hidden md:flex space-x-8">
+                    <a href="/" class="text-gray-800 font-semibold border-b-2 border-saffron pb-1">Home</a>
+                    <a href="/legacy" class="text-gray-600 hover:text-saffron transition">Our Legacy</a>
+                    <a href="/flavors" class="text-gray-600 hover:text-saffron transition">Flavors</a>
+                    <a href="/bulk" class="text-gray-600 hover:text-saffron transition">Bulk Orders</a>
+                    <a href="/contact" class="text-gray-600 hover:text-saffron transition">Contact</a>
+                </div>
+                
+                <a href="/contact" class="bg-saffron hover-saffron text-white px-6 py-2 rounded-md font-medium transition">
+                    Request Order
+                </a>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div class="md:hidden mt-4 space-y-2">
+                <a href="/" class="block text-saffron font-semibold">Home</a>
+                <a href="/legacy" class="block text-gray-600">Our Legacy</a>
+                <a href="/flavors" class="block text-gray-600">Flavors</a>
+                <a href="/bulk" class="block text-gray-600">Bulk Orders</a>
+                <a href="/contact" class="block text-gray-600">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="py-24 md:py-32 bg-cream">
+        <div class="container mx-auto px-6 text-center max-w-4xl">
+            <h1 class="text-6xl md:text-8xl font-bold text-saffron mb-6 leading-tight">
+                VELORA
+            </h1>
+            
+            <p class="text-xl md:text-2xl text-gray-700 mb-4 font-medium">
+                Crafted with Legacy Since 1983
+            </p>
+            
+            <p class="text-2xl md:text-3xl text-gray-800 mb-8 leading-relaxed">
+                Premium Shrikhand for<br class="md:hidden">
+                Celebrations, Weddings<br>
+                & Special Moments
+            </p>
+            
+            <p class="text-lg text-gray-600 mb-10">
+                Serving Kutiyana Since 1983
+            </p>
+            
+            <a href="/contact" class="btn-primary inline-block bg-saffron hover-saffron text-white px-10 py-4 rounded-md text-lg font-semibold shadow-lg">
+                Request Order
+            </a>
+        </div>
+    </section>
+
+    <!-- Featured Flavors -->
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12">
+                <p class="text-sm text-saffron font-semibold mb-2 tracking-wide uppercase">
+                    4 Signature Flavors
+                </p>
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-800">
+                    Our Collection
+                </h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+                {% for flavour in flavours %}
+                <div class="flavor-card bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="h-60 overflow-hidden">
+                        <img src="{{ url_for('static', filename='img/flavours/' + flavour.image) }}" 
+                             alt="{{ flavour.name }}"
+                             loading="lazy"
+                             class="w-full h-full object-cover">
+                    </div>
+                    
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-3">
+                            {{ flavour.name }}
+                        </h3>
+                        
+                        <p class="text-gray-600 mb-4 leading-relaxed">
+                            {{ flavour.description }}
+                        </p>
+                        
+                        <p class="text-xl font-bold text-saffron mb-4">
+                            {{ flavour.price }}
+                        </p>
+                        
+                        <a href="/contact" class="block text-center bg-saffron hover-saffron text-white px-6 py-2 rounded-md font-medium transition">
+                            Request Order
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Wedding & Bulk Banner -->
+    <section class="py-20 bg-cream">
+        <div class="container mx-auto px-6 text-center max-w-4xl">
+            <h2 class="text-4xl md:text-5xl font-bold text-saffron mb-6">
+                Weddings & Corporate Events
+            </h2>
+            
+            <p class="text-xl md:text-2xl text-gray-700 mb-10 leading-relaxed">
+                We specialize in custom bulk orders for weddings and corporate events.
+            </p>
+            
+            <a href="/bulk" class="btn-primary inline-block bg-saffron hover-saffron text-white px-10 py-4 rounded-md text-lg font-semibold shadow-lg">
+                Request Bulk Quote
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-6 text-center">
+            <h3 class="text-3xl font-bold text-saffron mb-4">Velora</h3>
+            
+            <p class="text-gray-300 mb-2">
+                Premium Shrikhand
+            </p>
+            
+            <p class="text-gray-400 mb-6">
+                Kutiyana, Gujarat
+            </p>
+            
+            <p class="text-gray-500 text-sm">
+                Handcrafted with legacy since 1983
+            </p>
+            
+            <div class="mt-8 pt-6 border-t border-gray-700">
+                <p class="text-gray-500 text-sm">
+                    © 2026 Velora. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

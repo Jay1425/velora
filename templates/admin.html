@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Velora Inquiries</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F5E6C8;
+        }
+        
+        h1, h2, h3, h4 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+        }
+        
+        .text-saffron {
+            color: #C96A00;
+        }
+        
+        .bg-saffron {
+            background-color: #C96A00;
+        }
+        
+        .bg-cream {
+            background-color: #F5E6C8;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm py-6">
+        <div class="container mx-auto px-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-4xl font-bold text-saffron">Velora Admin</h1>
+                    <p class="text-gray-600 mt-1">Order Inquiry Dashboard</p>
+                </div>
+                <a href="/" class="bg-saffron text-white px-6 py-2 rounded-md font-medium hover:bg-opacity-90 transition">
+                    Back to Website
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Stats Section -->
+    <section class="py-8 bg-cream">
+        <div class="container mx-auto px-6">
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <p class="text-5xl font-bold text-saffron mb-2">{{ inquiries|length }}</p>
+                <p class="text-gray-700 text-lg">Total Inquiries Received</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Inquiries Table -->
+    <section class="py-8">
+        <div class="container mx-auto px-6">
+            
+            {% if inquiries %}
+            
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-saffron text-white">
+                            <tr>
+                                <th class="px-6 py-4 text-left font-semibold">ID</th>
+                                <th class="px-6 py-4 text-left font-semibold">Date</th>
+                                <th class="px-6 py-4 text-left font-semibold">Name</th>
+                                <th class="px-6 py-4 text-left font-semibold">Phone</th>
+                                <th class="px-6 py-4 text-left font-semibold">Flavor</th>
+                                <th class="px-6 py-4 text-left font-semibold">Quantity</th>
+                                <th class="px-6 py-4 text-left font-semibold">Event Date</th>
+                                <th class="px-6 py-4 text-left font-semibold">Message</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            {% for inquiry in inquiries %}
+                            <tr class="hover:bg-cream transition">
+                                <td class="px-6 py-4 font-semibold text-saffron">{{ inquiry.id }}</td>
+                                <td class="px-6 py-4 text-gray-700">
+                                    {{ inquiry.created_at.strftime('%d %b %Y') }}<br>
+                                    <span class="text-sm text-gray-500">{{ inquiry.created_at.strftime('%I:%M %p') }}</span>
+                                </td>
+                                <td class="px-6 py-4 font-semibold text-gray-800">{{ inquiry.name }}</td>
+                                <td class="px-6 py-4 text-gray-700">
+                                    <a href="tel:{{ inquiry.phone }}" class="text-saffron hover:underline">
+                                        {{ inquiry.phone }}
+                                    </a>
+                                </td>
+                                <td class="px-6 py-4 text-gray-700">{{ inquiry.flavor }}</td>
+                                <td class="px-6 py-4 font-semibold text-gray-800">{{ inquiry.quantity }}</td>
+                                <td class="px-6 py-4 text-gray-700">
+                                    {% if inquiry.event_date %}
+                                        {{ inquiry.event_date }}
+                                    {% else %}
+                                        <span class="text-gray-400">Not specified</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4 text-gray-700 max-w-xs">
+                                    {% if inquiry.message %}
+                                        {{ inquiry.message }}
+                                    {% else %}
+                                        <span class="text-gray-400">No message</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            {% else %}
+            
+            <div class="bg-white rounded-lg shadow-md p-12 text-center">
+                <p class="text-2xl text-gray-600 mb-4">No inquiries yet</p>
+                <p class="text-gray-500">Inquiries will appear here as customers submit the contact form</p>
+            </div>
+            
+            {% endif %}
+            
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8 mt-12">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-gray-400">
+                Velora Admin Dashboard © 2026
+            </p>
+        </div>
+    </footer>
+
+</body>
+</html>
