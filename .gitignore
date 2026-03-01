@@ -132,3 +132,4 @@ credentials.json
 app_old.py
 test_structure.py
 test_refactored_app.py
+check_deployment_ready.py
