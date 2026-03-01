@@ -66,7 +66,12 @@ def create_app(config_name=None):
     # HTTPS enforcement in production
     @app.before_request
     def enforce_https():
-        """Redirect HTTP to HTTPS in production."""
+        """Redirect HTTP to HTTPS in production (not on localhost)."""
+        # Skip HTTPS redirect for localhost/development servers
+        if request.host.startswith(('localhost', '127.0.0.1', '0.0.0.0')):
+            return None
+        
+        # Only enforce HTTPS in production (when DEBUG is False)
         if not app.config.get('DEBUG') and request.url.startswith('http://'):
             url = request.url.replace('http://', 'https://', 1)
             return redirect(url, code=301)
