@@ -411,46 +411,73 @@ Update footer in all template files:
 
 ## 🌐 Deployment
 
-### Option 1: PythonAnywhere (Free)
+### ⭐ Recommended: Render + Neon PostgreSQL (Production-Ready)
+
+**Complete deployment guide:** See [DEPLOYMENT.md](DEPLOYMENT.md)
+
+**Quick Setup:**
+
+1. **Create Neon PostgreSQL Database** (free tier)
+   - Sign up at [neon.tech](https://neon.tech)
+   - Create project and get connection URL
+
+2. **Deploy to Render** (free tier available)
+   - Push code to GitHub
+   - Connect repo to [render.com](https://render.com)
+   - Create new "Web Service"
+   - **Build Command:** `pip install -r requirements.txt`
+   - **Start Command:** `gunicorn app:app`
+   
+3. **Set Environment Variables in Render:**
+   ```env
+   SECRET_KEY=your-generated-secret-key
+   ADMIN_USERNAME=velora_admin
+   ADMIN_PASSWORD_HASH=scrypt:32768:8:1$your_hash_here
+   DATABASE_URL=postgresql://user:pass@host/db?sslmode=require
+   ```
+
+4. **Deploy!** 
+   - Automatic deployment on git push
+   - HTTPS enabled automatically
+   - Production-ready in 5 minutes
+
+**Features:**
+- ✅ PostgreSQL database (scalable, production-grade)
+- ✅ SQLite fallback for local development
+- ✅ Gunicorn WSGI server (production server)
+- ✅ Auto-deploy from GitHub
+- ✅ Free SSL certificate
+- ✅ Zero-downtime deployments
+- ✅ Connection pooling configured
+
+---
+
+### Alternative: PythonAnywhere (SQLite only)
 
 1. Sign up at [pythonanywhere.com](https://www.pythonanywhere.com)
 2. Upload project files
 3. Set up Flask web app
 4. Install dependencies via Bash console
-5. Set working directory to project folder
+5. Configure environment variables
+6. **Note:** Uses SQLite (good for small projects)
 
-### Option 2: Render (Recommended)
+---
 
-1. Push code to GitHub
-2. Connect repo to [render.com](https://render.com)
-3. Create new "Web Service"
-4. Select Python environment
-5. Build command: `pip install -r requirements.txt`
-6. Start command: `python app.py`
+### Alternative: Heroku
 
-### Option 3: Heroku
-
-1. Update `app.py` for production:
-   ```python
-   if __name__ == '__main__':
-       import os
-       port = int(os.environ.get("PORT", 5000))
-       app.run(host='0.0.0.0', port=port)
+1. Create `Procfile`:
+   ```
+   web: gunicorn app:app
    ```
 
-2. Create `Procfile`:
-   ```
-   web: python app.py
-   ```
-
-3. Deploy:
+2. Deploy:
    ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
    heroku create your-app-name
+   heroku addons:create heroku-postgresql:mini
    git push heroku main
    ```
+
+**Note:** Heroku sets `DATABASE_URL` automatically.
 
 ---
 
@@ -487,15 +514,28 @@ The Velora admin panel includes enterprise-grade security:
 
 ## 🔧 Technical Stack
 
+**Backend:**
 - **Framework:** Flask 3.0.0
-- **Database:** Flask-SQLAlchemy 3.1.1 with SQLite
+- **Database:** Flask-SQLAlchemy 3.1.1
+  - **Production:** PostgreSQL (Neon)
+  - **Development:** SQLite (fallback)
+- **Database Driver:** psycopg2-binary 2.9.9 (PostgreSQL)
+- **WSGI Server:** Gunicorn 21.2.0 (production)
 - **Security:** Flask-WTF 1.2.1 (CSRF Protection)
 - **Password Hashing:** Werkzeug 3.0.1 (scrypt)
 - **Environment:** python-dotenv 1.0.0
+
+**Frontend:**
 - **Templating:** Jinja2
 - **CSS:** Tailwind CSS (via CDN)
 - **Fonts:** Google Fonts (Cormorant Garamond, Inter)
 - **Icons:** Emojis (universal support)
+
+**Infrastructure:**
+- **Hosting:** Render (recommended)
+- **Database:** Neon PostgreSQL (recommended)
+- **SSL:** Automatic (Render provides)
+- **CI/CD:** Auto-deploy from GitHub
 
 ---
 
@@ -519,18 +559,34 @@ Before going live:
 - [x] ✅ Debug mode disabled by default
 
 **Production Environment Setup:**
-- [ ] Generate production password hash:
-  ```bash
-  python -c "from werkzeug.security import generate_password_hash; print(generate_password_hash('YourProductionPassword'))"
-  ```
-- [ ] Set environment variables on production server:
+
+- [ ] **Create Neon PostgreSQL database:**
+  - Sign up at https://neon.tech
+  - Create project and get DATABASE_URL
+  
+- [ ] **Deploy to Render:**
+  - Connect GitHub repository
+  - Set start command: `gunicorn app:app`
+  
+- [ ] **Set environment variables on Render:**
+  - `DATABASE_URL` (from Neon PostgreSQL)
   - `ADMIN_USERNAME` (e.g., velora_admin)
-  - `ADMIN_PASSWORD_HASH` (hashed password from above)
+  - `ADMIN_PASSWORD_HASH` (generate with: `python generate_password_hash.py`)
   - `SECRET_KEY` (generate: `python -c "import os; print(os.urandom(24).hex())"`)
   - `FLASK_DEBUG=false` (explicitly disable debug mode)
-- [ ] Ensure `.env` file is NOT deployed (use server env vars)
-- [ ] SSL/HTTPS certificate configured and active
-- [ ] Test HTTPS redirect (HTTP → HTTPS)
+  
+- [ ] **Verify deployment:**
+  - Test HTTPS redirect (HTTP → HTTPS)
+  - Test admin login and rate limiting
+  - Submit test inquiry via contact form
+  - Verify WhatsApp redirect works
+  - Check admin analytics dashboard
+  
+- [ ] **Security verification:**
+  - Confirm CSRF protection active
+  - Test 15-minute lockout after 5 failed logins
+  - Verify session timeout (30 minutes)
+  - Check security headers in browser devtools
 
 **Testing:**
 - [ ] Test inquiry form submission with WhatsApp redirect

@@ -17,18 +17,49 @@ app = Flask(__name__)
 # Security Configuration (Production-Grade)
 # ============================================
 
+# Determine if running in debug mode
+DEBUG_MODE = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
+
 # Secret key for session signing
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', os.urandom(24).hex())
 
 # Secure session configuration
 app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SECURE'] = os.environ.get('FLASK_DEBUG', 'False').lower() != 'true'  # True in production
+app.config['SESSION_COOKIE_SECURE'] = not DEBUG_MODE  # True in production (HTTPS)
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 
-# Database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///velora.db'
+# ============================================
+# Database Configuration (PostgreSQL/SQLite)
+# ============================================
+
+def get_database_uri():
+    """
+    Get database URI with PostgreSQL support for production (Render + Neon)
+    Falls back to SQLite for local development
+    """
+    database_url = os.environ.get('DATABASE_URL')
+    
+    if database_url:
+        # Neon PostgreSQL fix: postgres:// -> postgresql://
+        if database_url.startswith('postgres://'):
+            database_url = database_url.replace('postgres://', 'postgresql://', 1)
+        return database_url
+    else:
+        # Fallback to SQLite for local development
+        return 'sqlite:///velora.db'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = get_database_uri()
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# PostgreSQL connection pool configuration (production optimization)
+if app.config['SQLALCHEMY_DATABASE_URI'].startswith('postgresql://'):
+    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+        'pool_pre_ping': True,        # Verify connections before using
+        'pool_recycle': 300,           # Recycle connections after 5 minutes
+        'pool_size': 10,               # Max connections in pool
+        'max_overflow': 20             # Max overflow connections
+    }
 
 # CSRF Protection
 csrf = CSRFProtect(app)
@@ -93,10 +124,9 @@ def set_security_headers(response):
 @app.before_request
 def enforce_https():
     """Redirect HTTP to HTTPS in production"""
-    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
-    
-    if not debug_mode and request.url.startswith('http://'):
+    if not DEBUG_MODE and request.url.startswith('http://'):
         url = request.url.replace('http://', 'https://', 1)
+        return redirect(url, code=301)
         return redirect(url, code=301)
 
 # ============================================
@@ -351,11 +381,29 @@ def admin():
     
     return render_template('admin.html', inquiries=inquiries, analytics=analytics, current_filter=filter_by)
 
+# ============================================
+# Database Initialization
+# ============================================
+
 # Create database tables
 with app.app_context():
     db.create_all()
 
+# ============================================
+# Production Server Configuration
+# ============================================
+
 if __name__ == '__main__':
-    # Use environment variable for debug mode (default to False for production)
-    debug_mode = os.environ.get('FLASK_DEBUG', 'False').lower() == 'true'
-    app.run(debug=debug_mode)
+    # Production-ready configuration for Render deployment
+    # - host="0.0.0.0" allows external connections
+    # - port from environment variable (Render assigns dynamically)
+    # - debug disabled in production
+    
+    port = int(os.environ.get('PORT', 5000))
+    host = os.environ.get('HOST', '0.0.0.0')
+    
+    app.run(
+        host=host,
+        port=port,
+        debug=DEBUG_MODE
+    )
