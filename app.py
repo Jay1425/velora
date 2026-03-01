@@ -33,32 +33,24 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
 # Database Configuration (PostgreSQL/SQLite)
 # ============================================
 
-def get_database_uri():
-    """
-    Get database URI with PostgreSQL support for production (Render + Neon)
-    Falls back to SQLite for local development
-    """
-    database_url = os.environ.get('DATABASE_URL')
-    
-    if database_url:
-        # Neon PostgreSQL fix: postgres:// -> postgresql://
-        if database_url.startswith('postgres://'):
-            database_url = database_url.replace('postgres://', 'postgresql://', 1)
-        return database_url
-    else:
-        # Fallback to SQLite for local development
-        return 'sqlite:///velora.db'
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
-app.config['SQLALCHEMY_DATABASE_URI'] = get_database_uri()
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+if DATABASE_URL:
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+else:
+    DATABASE_URL = "sqlite:///velora.db"
+
+app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # PostgreSQL connection pool configuration (production optimization)
-if app.config['SQLALCHEMY_DATABASE_URI'].startswith('postgresql://'):
-    app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
-        'pool_pre_ping': True,        # Verify connections before using
-        'pool_recycle': 300,           # Recycle connections after 5 minutes
-        'pool_size': 10,               # Max connections in pool
-        'max_overflow': 20             # Max overflow connections
+if DATABASE_URL.startswith("postgresql://"):
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
+        "pool_pre_ping": True,        # Verify connections before using
+        "pool_recycle": 300,           # Recycle connections after 5 minutes
+        "pool_size": 10,               # Max connections in pool
+        "max_overflow": 20             # Max overflow connections
     }
 
 # CSRF Protection
