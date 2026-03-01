@@ -3,6 +3,7 @@ Velora Flask Application Factory.
 Creates and configures the Flask application with all extensions and blueprints.
 """
 import os
+from pathlib import Path
 from flask import Flask, redirect, request
 from flask_wtf.csrf import CSRFProtect
 
@@ -17,8 +18,13 @@ def create_app(config_name=None):
     Returns:
         Flask: Configured Flask application instance
     """
-    # Create Flask app
-    app = Flask(__name__)
+    # Get the parent directory (velora/) for templates and static folders
+    parent_dir = Path(__file__).parent.parent
+    
+    # Create Flask app with correct template and static folders
+    app = Flask(__name__,
+                template_folder=str(parent_dir / 'templates'),
+                static_folder=str(parent_dir / 'static'))
     
     # Load configuration
     if config_name is None:
