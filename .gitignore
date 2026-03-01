@@ -125,3 +125,9 @@ site/
 config.local.py
 secrets.py
 credentials.json
+
+# ============================================
+# Refactoring Artifacts
+# ============================================
+app_old.py
+test_structure.py
