@@ -16,6 +16,10 @@ class Config:
     # Security Configuration
     SECRET_KEY = os.environ.get('SECRET_KEY', os.urandom(24).hex())
     
+    # CSRF Configuration
+    WTF_CSRF_ENABLED = True
+    WTF_CSRF_TIME_LIMIT = None  # No time limit for CSRF tokens
+    
     # Session Configuration
     SESSION_COOKIE_HTTPONLY = True
     SESSION_COOKIE_SAMESITE = 'Lax'
@@ -48,6 +52,9 @@ class ProductionConfig(Config):
     
     DEBUG = False
     SESSION_COOKIE_SECURE = True  # Require HTTPS in production
+    
+    # CSRF Configuration for production (enforce SSL)
+    WTF_CSRF_SSL_STRICT = True  # Require HTTPS for CSRF validation in production
     
     # PostgreSQL database URL from environment (Neon compatible)
     DATABASE_URL = os.environ.get("DATABASE_URL")

@@ -54,7 +54,8 @@ def create_app(config_name=None):
         """Add security headers to all responses."""
         response.headers['X-Frame-Options'] = 'DENY'
         response.headers['X-Content-Type-Options'] = 'nosniff'
-        response.headers['Referrer-Policy'] = 'no-referrer'
+        # Use 'same-origin' to allow referrer for CSRF protection
+        response.headers['Referrer-Policy'] = 'same-origin'
         response.headers['Content-Security-Policy'] = (
             "default-src 'self' 'unsafe-inline' https:; "
             "img-src 'self' data: https:; "
