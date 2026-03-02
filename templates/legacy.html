@@ -54,10 +54,11 @@
 
     <!-- Navigation -->
     <nav class="bg-white shadow-sm sticky top-0 z-50">
-        <div class="container mx-auto px-6 py-4">
+        <div class="container mx-auto px-4 md:px-6 py-4">
             <div class="flex justify-between items-center">
-                <a href="/" class="text-3xl font-bold text-saffron">Velora</a>
+                <a href="/" class="text-2xl md:text-3xl font-bold text-saffron">Velora</a>
                 
+                <!-- Desktop Menu -->
                 <div class="hidden md:flex space-x-8">
                     <a href="/" class="text-gray-600 hover:text-saffron transition">Home</a>
                     <a href="/legacy" class="text-gray-800 font-semibold border-b-2 border-saffron pb-1">Our Legacy</a>
@@ -66,26 +67,44 @@
                     <a href="/contact" class="text-gray-600 hover:text-saffron transition">Contact</a>
                 </div>
                 
-                <a href="/contact" class="bg-saffron hover-saffron text-white px-6 py-2 rounded-md font-medium transition">
+                <!-- Desktop CTA -->
+                <a href="/contact" class="hidden md:block bg-saffron hover-saffron text-white px-6 py-2 rounded-md font-medium transition">
+                    Request Order
+                </a>
+                
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMobileMenu()" class="md:hidden p-2">
+                    <svg class="w-6 h-6 text-saffron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Mobile Menu (Hidden by default) -->
+            <div id="mobileMenu" class="hidden md:hidden mt-4 space-y-3 pb-4">
+                <a href="/" class="block text-gray-600 py-2">Home</a>
+                <a href="/legacy" class="block text-saffron font-semibold py-2">Our Legacy</a>
+                <a href="/flavors" class="block text-gray-600 py-2">Flavors</a>
+                <a href="/bulk" class="block text-gray-600 py-2">Bulk Orders</a>
+                <a href="/contact" class="block text-gray-600 py-2">Contact</a>
+                <a href="/contact" class="block bg-saffron text-white px-6 py-3 rounded-md font-medium text-center mt-2">
                     Request Order
                 </a>
             </div>
-            
-            <!-- Mobile Menu -->
-            <div class="md:hidden mt-4 space-y-2">
-                <a href="/" class="block text-gray-600">Home</a>
-                <a href="/legacy" class="block text-saffron font-semibold">Our Legacy</a>
-                <a href="/flavors" class="block text-gray-600">Flavors</a>
-                <a href="/bulk" class="block text-gray-600">Bulk Orders</a>
-                <a href="/contact" class="block text-gray-600">Contact</a>
-            </div>
         </div>
     </nav>
+    
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        }
+    </script>
 
     <!-- Hero -->
-    <section class="py-20 bg-cream">
-        <div class="container mx-auto px-6 text-center max-w-4xl">
-            <h1 class="text-5xl md:text-7xl font-bold text-saffron mb-8">
+    <section class="py-16 md:py-20 bg-cream">
+        <div class="container mx-auto px-4 md:px-6 text-center max-w-4xl">
+            <h1 class="text-4xl md:text-5xl lg:text-7xl font-bold text-saffron mb-8">
                 Our Legacy
             </h1>
             
