@@ -123,6 +123,9 @@
             
             <form method="POST" action="/contact" class="space-y-6">
                 
+                <!-- CSRF Token -->
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                
                 <!-- Name -->
                 <div>
                     <label for="name" class="block text-lg font-semibold text-gray-800 mb-2">
