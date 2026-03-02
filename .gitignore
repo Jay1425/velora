@@ -133,3 +133,5 @@ app_old.py
 test_structure.py
 test_refactored_app.py
 check_deployment_ready.py
+test_csrf.py
+test_forms.py
