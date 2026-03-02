@@ -4,7 +4,7 @@ Handles homepage, legacy, flavors, bulk orders, contact form, and order tracking
 """
 from flask import Blueprint, render_template, request, redirect, url_for, flash, send_file
 from urllib.parse import quote
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from app.models import db, Inquiry, FLAVOURS
 from app.utils.receipt import generate_receipt_pdf
 
@@ -161,4 +161,5 @@ def track_order():
     return render_template('track_order.html', 
                          order=order, 
                          searched=searched,
-                         order_number_searched=order_number)
+                         order_number_searched=order_number,
+                         timedelta=timedelta)

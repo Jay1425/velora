@@ -4,7 +4,7 @@ Handles authentication, inquiry management, and analytics.
 """
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app
 from werkzeug.security import check_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
 from app.models import db, Inquiry
 from app.utils.security import admin_required, check_lockout, log_admin_access
 
@@ -150,7 +150,7 @@ def admin():
         'inquiries_this_month': inquiries_this_month
     }
     
-    return render_template('admin.html', inquiries=inquiries, analytics=analytics, current_filter=filter_by)
+    return render_template('admin.html', inquiries=inquiries, analytics=analytics, current_filter=filter_by, timedelta=timedelta)
 
 
 @admin_bp.route('/update-status/<int:order_id>', methods=['POST'])

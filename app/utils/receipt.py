@@ -3,7 +3,7 @@ PDF Receipt Generator for Velora Orders.
 Generates professional order receipts with Velora branding.
 """
 from io import BytesIO
-from datetime import datetime
+from datetime import datetime, timedelta
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from reportlab.lib.units import inch
@@ -12,6 +12,12 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER, TA_RIGHT, TA_LEFT
 from reportlab.pdfgen import canvas
 from app.models import VELORA_ADDRESS
+
+
+def utc_to_ist(utc_time):
+    """Convert UTC datetime to IST (UTC+5:30)."""
+    ist_offset = timedelta(hours=5, minutes=30)
+    return utc_time + ist_offset
 
 
 def generate_receipt_pdf(inquiry):
@@ -130,9 +136,10 @@ def generate_receipt_pdf(inquiry):
     story.append(Spacer(1, 0.2*inch))
     
     # Order Information Table
+    ist_time = utc_to_ist(inquiry.created_at)
     order_data = [
         ['Order Number:', inquiry.order_number],
-        ['Order Date:', inquiry.created_at.strftime('%d %B %Y, %I:%M %p')],
+        ['Order Date:', ist_time.strftime('%d %B %Y, %I:%M %p')],
         ['Status:', inquiry.status.upper()],
     ]
     
@@ -157,10 +164,21 @@ def generate_receipt_pdf(inquiry):
     story.append(Paragraph("CUSTOMER DETAILS", heading_style))
     story.append(Spacer(1, 0.1*inch))
     
+    # Create a style for address wrapping
+    address_style = ParagraphStyle(
+        'AddressStyle',
+        parent=styles['Normal'],
+        fontSize=11,
+        fontName='Helvetica',
+        leading=14
+    )
+    
+    delivery_address = f"{inquiry.delivery_street}, {inquiry.delivery_city}, {inquiry.delivery_state} - {inquiry.delivery_pincode}"
+    
     customer_data = [
         ['Name:', inquiry.name],
         ['Phone:', inquiry.phone],
-        ['Delivery Address:', f"{inquiry.delivery_street}, {inquiry.delivery_city}, {inquiry.delivery_state} - {inquiry.delivery_pincode}"],
+        ['Delivery Address:', Paragraph(delivery_address, address_style)],
     ]
     
     customer_table = Table(customer_data, colWidths=[2*inch, 4*inch])

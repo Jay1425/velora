@@ -129,8 +129,8 @@
                                     <span class="text-xs text-gray-500">ID: {{ inquiry.id }}</span>
                                 </td>
                                 <td class="px-4 py-4 text-gray-700 text-sm">
-                                    {{ inquiry.created_at.strftime('%d %b %Y') }}<br>
-                                    <span class="text-xs text-gray-500">{{ inquiry.created_at.strftime('%I:%M %p') }}</span>
+                                    {{ (inquiry.created_at + timedelta(hours=5, minutes=30)).strftime('%d %b %Y') }}<br>
+                                    <span class="text-xs text-gray-500">{{ (inquiry.created_at + timedelta(hours=5, minutes=30)).strftime('%I:%M %p') }}</span>
                                 </td>
                                 <td class="px-4 py-4 font-semibold text-gray-800">{{ inquiry.name }}</td>
                                 <td class="px-4 py-4 text-gray-700 text-sm">
