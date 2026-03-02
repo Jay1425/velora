@@ -219,8 +219,9 @@
                            id="event_date" 
                            name="event_date"
                            min=""
+                           max=""
                            class="w-full px-5 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-saffron">
-                    <p class="text-xs text-gray-500 mt-1">* Event date must be today or a future date</p>
+                    <p class="text-xs text-gray-500 mt-1">* Event date must be between today and 2 years from now</p>
                 </div>
                 
                 <!-- Message -->
@@ -306,12 +307,20 @@
 
     <!-- Date Validation Script -->
     <script>
-        // Set minimum date to today for event date picker
+        // Set minimum and maximum dates for event date picker
         document.addEventListener('DOMContentLoaded', function() {
             const eventDateInput = document.getElementById('event_date');
             if (eventDateInput) {
-                const today = new Date().toISOString().split('T')[0];
-                eventDateInput.setAttribute('min', today);
+                const today = new Date();
+                const minDate = today.toISOString().split('T')[0];
+                
+                // Set max date to 2 years from today
+                const maxDate = new Date();
+                maxDate.setFullYear(maxDate.getFullYear() + 2);
+                const maxDateStr = maxDate.toISOString().split('T')[0];
+                
+                eventDateInput.setAttribute('min', minDate);
+                eventDateInput.setAttribute('max', maxDateStr);
             }
         });
     </script>

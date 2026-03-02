@@ -51,13 +51,19 @@ def contact():
         event_date_str = request.form.get('event_date')
         message = request.form.get('message')
         
-        # Validate event date (if provided) - must be future date
+        # Validate event date (if provided) - must be future date within 2 years
         if event_date_str:
             try:
                 event_date = datetime.strptime(event_date_str, '%Y-%m-%d').date()
                 today = date.today()
+                max_date = today.replace(year=today.year + 2)
+                
                 if event_date < today:
                     flash('Event date cannot be in the past. Please select a future date.', 'error')
+                    return redirect(url_for('main.contact'))
+                
+                if event_date > max_date:
+                    flash('Event date cannot be more than 2 years in the future. Please select a reasonable date.', 'error')
                     return redirect(url_for('main.contact'))
             except ValueError:
                 flash('Invalid date format. Please select a valid date.', 'error')
