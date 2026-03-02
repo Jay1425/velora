@@ -197,6 +197,10 @@
                             <p class="text-sm text-gray-600 mb-1">Phone Number</p>
                             <p class="font-semibold text-gray-800">{{ order.phone }}</p>
                         </div>
+                        <div class="md:col-span-2">
+                            <p class="text-sm text-gray-600 mb-1">Delivery Address</p>
+                            <p class="font-semibold text-gray-800">{{ order.delivery_street }}, {{ order.delivery_city }}, {{ order.delivery_state }} - {{ order.delivery_pincode }}</p>
+                        </div>
                         <div>
                             <p class="text-sm text-gray-600 mb-1">Flavor</p>
                             <p class="font-semibold text-gray-800">{{ order.flavor }}</p>

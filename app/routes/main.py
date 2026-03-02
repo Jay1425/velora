@@ -51,6 +51,12 @@ def contact():
         event_date_str = request.form.get('event_date')
         message = request.form.get('message')
         
+        # Get delivery address
+        delivery_street = request.form.get('delivery_street')
+        delivery_city = request.form.get('delivery_city')
+        delivery_state = request.form.get('delivery_state')
+        delivery_pincode = request.form.get('delivery_pincode')
+        
         # Validate event date (if provided) - must be future date within 2 years
         if event_date_str:
             try:
@@ -81,6 +87,10 @@ def contact():
             quantity=quantity,
             event_date=event_date_str,
             message=message,
+            delivery_street=delivery_street,
+            delivery_city=delivery_city,
+            delivery_state=delivery_state,
+            delivery_pincode=delivery_pincode,
             status='submitted'
         )
         

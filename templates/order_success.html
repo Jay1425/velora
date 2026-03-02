@@ -121,6 +121,12 @@
                             <span class="text-gray-600">Quantity:</span>
                             <span class="font-semibold text-gray-800">{{ order.quantity }}</span>
                         </div>
+                        <div class="border-b border-gray-200 pb-2">
+                            <span class="text-gray-600 block mb-1">Delivery Address:</span>
+                            <span class="font-semibold text-gray-800 text-sm">
+                                {{ order.delivery_street }}, {{ order.delivery_city }}, {{ order.delivery_state }} - {{ order.delivery_pincode }}
+                            </span>
+                        </div>
                         {% if order.event_date %}
                         <div class="flex justify-between border-b border-gray-200 pb-2">
                             <span class="text-gray-600">Event Date:</span>

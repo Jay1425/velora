@@ -9,8 +9,9 @@ from reportlab.lib import colors
 from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.enums import TA_CENTER, TA_RIGHT
+from reportlab.lib.enums import TA_CENTER, TA_RIGHT, TA_LEFT
 from reportlab.pdfgen import canvas
+from app.models import VELORA_ADDRESS
 
 
 def generate_receipt_pdf(inquiry):
@@ -63,7 +64,65 @@ def generate_receipt_pdf(inquiry):
     # Company Header
     story.append(Paragraph("VELORA", title_style))
     story.append(Paragraph("Premium Shrikhand Since 1983", subtitle_style))
-    story.append(Paragraph("Kutiyana, Gujarat | +91 94286 38301", subtitle_style))
+    story.append(Spacer(1, 0.3*inch))
+    
+    # From and To Addresses (Side by Side)
+    address_heading_style = ParagraphStyle(
+        'AddressHeading',
+        parent=styles['Normal'],
+        fontSize=10,
+        textColor=colors.HexColor('#C96A00'),
+        fontName='Helvetica-Bold',
+        spaceAfter=4
+    )
+    
+    address_text_style = ParagraphStyle(
+        'AddressText',
+        parent=styles['Normal'],
+        fontSize=9,
+        textColor=colors.black,
+        fontName='Helvetica',
+        leading=12
+    )
+    
+    # Create address table data
+    from_address = f"""<para align=left>
+    <b>FROM:</b><br/>
+    {VELORA_ADDRESS['name']}<br/>
+    {VELORA_ADDRESS['shop']}<br/>
+    {VELORA_ADDRESS['street']}<br/>
+    {VELORA_ADDRESS['city']}, {VELORA_ADDRESS['state']} - {VELORA_ADDRESS['pincode']}<br/>
+    {VELORA_ADDRESS['country']}<br/>
+    Phone: {VELORA_ADDRESS['phone']}
+    </para>"""
+    
+    to_address = f"""<para align=left>
+    <b>TO:</b><br/>
+    {inquiry.name}<br/>
+    {inquiry.delivery_street}<br/>
+    {inquiry.delivery_city}, {inquiry.delivery_state} - {inquiry.delivery_pincode}<br/>
+    India<br/>
+    Phone: {inquiry.phone}
+    </para>"""
+    
+    address_data = [[
+        Paragraph(from_address, address_text_style),
+        Paragraph(to_address, address_text_style)
+    ]]
+    
+    address_table = Table(address_data, colWidths=[3*inch, 3*inch])
+    address_table.setStyle(TableStyle([
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('BOX', (0, 0), (0, 0), 1, colors.HexColor('#F5E6C8')),
+        ('BOX', (1, 0), (1, 0), 1, colors.HexColor('#F5E6C8')),
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#FFFEF9')),
+        ('LEFTPADDING', (0, 0), (-1, -1), 12),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 12),
+        ('TOPPADDING', (0, 0), (-1, -1), 12),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 12),
+    ]))
+    
+    story.append(address_table)
     story.append(Spacer(1, 0.3*inch))
     
     # Receipt Title
@@ -101,6 +160,7 @@ def generate_receipt_pdf(inquiry):
     customer_data = [
         ['Name:', inquiry.name],
         ['Phone:', inquiry.phone],
+        ['Delivery Address:', f"{inquiry.delivery_street}, {inquiry.delivery_city}, {inquiry.delivery_state} - {inquiry.delivery_pincode}"],
     ]
     
     customer_table = Table(customer_data, colWidths=[2*inch, 4*inch])
@@ -196,7 +256,7 @@ def generate_receipt_pdf(inquiry):
     story.append(Paragraph("Thank you for choosing Velora Premium Shrikhand!", footer_style))
     story.append(Paragraph(f"Track your order at: www.velora.com/track?order={inquiry.order_number}", footer_style))
     story.append(Spacer(1, 0.1*inch))
-    story.append(Paragraph("For inquiries, WhatsApp us at +91 94286 38301", footer_style))
+    story.append(Paragraph(f"For inquiries, WhatsApp us at {VELORA_ADDRESS['phone']}", footer_style))
     
     # Build PDF
     doc.build(story)

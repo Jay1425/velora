@@ -7,6 +7,19 @@ from datetime import datetime
 # Initialize SQLAlchemy (will be configured in app factory)
 db = SQLAlchemy()
 
+# Velora Company Address
+VELORA_ADDRESS = {
+    'name': 'Velora - Premium Shrikhand',
+    'shop': 'Rasik Pan & Cold Drinks',
+    'street': 'Dolat Chowk, Main Bazar',
+    'city': 'Kutiyana',
+    'pincode': '362650',
+    'state': 'Gujarat',
+    'country': 'India',
+    'phone': '+91 94286 38301',
+    'full': 'Rasik Pan & Cold Drinks, Dolat Chowk, Main Bazar, Kutiyana, 362650, Gujarat, India'
+}
+
 
 class Inquiry(db.Model):
     """Customer inquiry model for orders and questions."""
@@ -19,6 +32,13 @@ class Inquiry(db.Model):
     quantity = db.Column(db.String(20), nullable=False)
     event_date = db.Column(db.String(20))
     message = db.Column(db.Text)
+    
+    # Delivery Address Fields
+    delivery_street = db.Column(db.String(200), nullable=False)
+    delivery_city = db.Column(db.String(100), nullable=False)
+    delivery_state = db.Column(db.String(100), nullable=False)
+    delivery_pincode = db.Column(db.String(20), nullable=False)
+    
     status = db.Column(db.String(20), default='submitted', nullable=False)  # submitted, accepted, fulfilled, dispatched, delivered
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
