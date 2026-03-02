@@ -21,7 +21,10 @@
 *.sqlite
 *.sqlite3
 instance/
-migrations/
+
+# Track migrations folder but ignore cache
+!migrations/
+migrations/__pycache__/
 
 # ============================================
 # Python

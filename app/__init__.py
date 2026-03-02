@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 from flask import Flask, redirect, request
 from flask_wtf.csrf import CSRFProtect
+from flask_migrate import Migrate
 
 
 def create_app(config_name=None):
@@ -37,6 +38,9 @@ def create_app(config_name=None):
     # Initialize extensions
     from app.models import db
     db.init_app(app)
+    
+    # Initialize Flask-Migrate
+    migrate = Migrate(app, db)
     
     csrf = CSRFProtect()
     csrf.init_app(app)
@@ -77,18 +81,11 @@ def create_app(config_name=None):
             url = request.url.replace('http://', 'https://', 1)
             return redirect(url, code=301)
     
-    # Database initialization
+    # Database initialization (Flask-Migrate handles schema changes)
     with app.app_context():
-        # Check if database reset is requested (for schema migrations)
-        reset_db = os.environ.get('RESET_DB', 'false').lower() == 'true'
-        
-        if reset_db:
-            print("⚠️  RESET_DB=true detected - Dropping all tables...")
-            db.drop_all()
-            print("✓ Tables dropped")
-        
-        # Create all tables (new schema)
-        db.create_all()
-        print("✓ Database tables created/verified")
+        # Only create tables in development without migrations folder
+        if not os.path.exists('migrations'):
+            db.create_all()
+            print("✓ Database tables created (development mode)")
     
     return app
