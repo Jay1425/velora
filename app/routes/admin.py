@@ -160,7 +160,7 @@ def update_status(order_id):
     order = Inquiry.query.get_or_404(order_id)
     new_status = request.form.get('status')
     
-    if new_status in ['submitted', 'accepted', 'fulfilled', 'dispatched', 'delivered']:
+    if new_status in ['submitted', 'accepted', 'rejected', 'fulfilled', 'dispatched', 'delivered']:
         order.status = new_status
         db.session.commit()
         flash(f'Order {order.order_number} status updated to {new_status}', 'success')
