@@ -151,3 +151,20 @@ def admin():
     }
     
     return render_template('admin.html', inquiries=inquiries, analytics=analytics, current_filter=filter_by)
+
+
+@admin_bp.route('/update-status/<int:order_id>', methods=['POST'])
+@admin_required
+def update_status(order_id):
+    """Update order status."""
+    order = Inquiry.query.get_or_404(order_id)
+    new_status = request.form.get('status')
+    
+    if new_status in ['submitted', 'accepted', 'fulfilled', 'dispatched', 'delivered']:
+        order.status = new_status
+        db.session.commit()
+        flash(f'Order {order.order_number} status updated to {new_status}', 'success')
+    else:
+        flash('Invalid status', 'error')
+    
+    return redirect(url_for('admin.admin'))

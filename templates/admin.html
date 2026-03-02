@@ -110,45 +110,73 @@
                     <table class="w-full">
                         <thead class="bg-saffron text-white">
                             <tr>
-                                <th class="px-6 py-4 text-left font-semibold">ID</th>
-                                <th class="px-6 py-4 text-left font-semibold">Date</th>
-                                <th class="px-6 py-4 text-left font-semibold">Name</th>
-                                <th class="px-6 py-4 text-left font-semibold">Phone</th>
-                                <th class="px-6 py-4 text-left font-semibold">Flavor</th>
-                                <th class="px-6 py-4 text-left font-semibold">Quantity</th>
-                                <th class="px-6 py-4 text-left font-semibold">Event Date</th>
-                                <th class="px-6 py-4 text-left font-semibold">Message</th>
+                                <th class="px-4 py-4 text-left font-semibold">Order #</th>
+                                <th class="px-4 py-4 text-left font-semibold">Date</th>
+                                <th class="px-4 py-4 text-left font-semibold">Name</th>
+                                <th class="px-4 py-4 text-left font-semibold">Phone</th>
+                                <th class="px-4 py-4 text-left font-semibold">Flavor</th>
+                                <th class="px-4 py-4 text-left font-semibold">Qty</th>
+                                <th class="px-4 py-4 text-left font-semibold">Event</th>
+                                <th class="px-4 py-4 text-left font-semibold">Status</th>
+                                <th class="px-4 py-4 text-left font-semibold">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
                             {% for inquiry in inquiries %}
                             <tr class="hover:bg-cream transition">
-                                <td class="px-6 py-4 font-semibold text-saffron">{{ inquiry.id }}</td>
-                                <td class="px-6 py-4 text-gray-700">
-                                    {{ inquiry.created_at.strftime('%d %b %Y') }}<br>
-                                    <span class="text-sm text-gray-500">{{ inquiry.created_at.strftime('%I:%M %p') }}</span>
+                                <td class="px-4 py-4">
+                                    <span class="font-semibold text-saffron">{{ inquiry.order_number }}</span><br>
+                                    <span class="text-xs text-gray-500">ID: {{ inquiry.id }}</span>
                                 </td>
-                                <td class="px-6 py-4 font-semibold text-gray-800">{{ inquiry.name }}</td>
-                                <td class="px-6 py-4 text-gray-700">
+                                <td class="px-4 py-4 text-gray-700 text-sm">
+                                    {{ inquiry.created_at.strftime('%d %b %Y') }}<br>
+                                    <span class="text-xs text-gray-500">{{ inquiry.created_at.strftime('%I:%M %p') }}</span>
+                                </td>
+                                <td class="px-4 py-4 font-semibold text-gray-800">{{ inquiry.name }}</td>
+                                <td class="px-4 py-4 text-gray-700 text-sm">
                                     <a href="tel:{{ inquiry.phone }}" class="text-saffron hover:underline">
                                         {{ inquiry.phone }}
                                     </a>
                                 </td>
-                                <td class="px-6 py-4 text-gray-700">{{ inquiry.flavor }}</td>
-                                <td class="px-6 py-4 font-semibold text-gray-800">{{ inquiry.quantity }}</td>
-                                <td class="px-6 py-4 text-gray-700">
+                                <td class="px-4 py-4 text-gray-700 text-sm">{{ inquiry.flavor }}</td>
+                                <td class="px-4 py-4 font-semibold text-gray-800 text-sm">{{ inquiry.quantity }}</td>
+                                <td class="px-4 py-4 text-gray-700 text-sm">
                                     {% if inquiry.event_date %}
                                         {{ inquiry.event_date }}
                                     {% else %}
-                                        <span class="text-gray-400">Not specified</span>
+                                        <span class="text-gray-400">N/A</span>
                                     {% endif %}
                                 </td>
-                                <td class="px-6 py-4 text-gray-700 max-w-xs">
-                                    {% if inquiry.message %}
-                                        {{ inquiry.message }}
-                                    {% else %}
-                                        <span class="text-gray-400">No message</span>
+                                <td class="px-4 py-4">
+                                    {% if inquiry.status == 'submitted' %}
+                                        <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold">Submitted</span>
+                                    {% elif inquiry.status == 'accepted' %}
+                                        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">Accepted</span>
+                                    {% elif inquiry.status == 'fulfilled' %}
+                                        <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-semibold">Fulfilled</span>
+                                    {% elif inquiry.status == 'dispatched' %}
+                                        <span class="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-xs font-semibold">Dispatched</span>
+                                    {% elif inquiry.status == 'delivered' %}
+                                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">Delivered</span>
                                     {% endif %}
+                                </td>
+                                <td class="px-4 py-4">
+                                    <form method="POST" action="/admin/update-status/{{ inquiry.id }}" class="inline-flex items-center space-x-2">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <select name="status" class="text-xs px-2 py-1 border border-gray-300 rounded focus:outline-none focus:border-saffron">
+                                            <option value="submitted" {% if inquiry.status == 'submitted' %}selected{% endif %}>Submitted</option>
+                                            <option value="accepted" {% if inquiry.status == 'accepted' %}selected{% endif %}>Accepted</option>
+                                            <option value="fulfilled" {% if inquiry.status == 'fulfilled' %}selected{% endif %}>Fulfilled</option>
+                                            <option value="dispatched" {% if inquiry.status == 'dispatched' %}selected{% endif %}>Dispatched</option>
+                                            <option value="delivered" {% if inquiry.status == 'delivered' %}selected{% endif %}>Delivered</option>
+                                        </select>
+                                        <button type="submit" class="text-xs bg-saffron text-white px-3 py-1 rounded hover:bg-opacity-90 transition">
+                                            Update
+                                        </button>
+                                    </form>
+                                    <a href="/track?order={{ inquiry.order_number }}" target="_blank" class="text-xs text-blue-600 hover:underline block mt-1">
+                                        View Tracking
+                                    </a>
                                 </td>
                             </tr>
                             {% endfor %}
