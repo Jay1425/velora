@@ -279,7 +279,7 @@ def generate_receipt_pdf(inquiry):
     
     story.append(Spacer(1, 0.3*inch))
     story.append(Paragraph("Thank you for choosing Velora Premium Shrikhand!", footer_style))
-    story.append(Paragraph(f"Track your order at: www.velora.com/track?order={inquiry.order_number}", footer_style))
+    story.append(Paragraph(f"Track your order at: https://velorafoods.onrender.com/track?order={inquiry.order_number}", footer_style))
     story.append(Spacer(1, 0.1*inch))
     story.append(Paragraph(f"For inquiries, WhatsApp us at {VELORA_ADDRESS['phone']}", footer_style))
     
