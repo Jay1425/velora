@@ -83,8 +83,16 @@ def create_app(config_name=None):
     
     # Database initialization (Flask-Migrate handles schema changes)
     with app.app_context():
+        # Check for RESET_DB environment variable to force database reset
+        if os.environ.get('RESET_DB', '').lower() == 'true':
+            print("⚠️  RESET_DB=true detected - Dropping all tables...")
+            db.drop_all()
+            print("✓ All tables dropped")
+            db.create_all()
+            print("✓ Database tables recreated with current schema")
+            print("⚠️  Remember to remove RESET_DB environment variable after restart!")
         # Only create tables in development without migrations folder
-        if not os.path.exists('migrations'):
+        elif not os.path.exists('migrations'):
             db.create_all()
             print("✓ Database tables created (development mode)")
     
