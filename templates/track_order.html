@@ -124,22 +124,36 @@
                 
                 <!-- Progress Bar -->
                 <div class="bg-white p-8 border-b">
-                    <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
-                        {% set progress = namespace(value=0) %}
-                        {% if order.status == 'submitted' %}{% set progress.value = 20 %}{% endif %}
-                        {% if order.status == 'accepted' %}{% set progress.value = 40 %}{% endif %}
-                        {% if order.status == 'fulfilled' %}{% set progress.value = 60 %}{% endif %}
-                        {% if order.status == 'dispatched' %}{% set progress.value = 80 %}{% endif %}
-                        {% if order.status == 'delivered' %}{% set progress.value = 100 %}{% endif %}
-                        <div class="bg-saffron h-3 rounded-full transition-all duration-500" style="width: {{ progress.value }}%"></div>
-                    </div>
-                    <p class="text-center text-gray-600">
-                        <span class="font-semibold text-saffron">{{ progress.value }}%</span> Complete
-                    </p>
+                    {% if order.status == 'rejected' %}
+                        <!-- Rejected Order Message -->
+                        <div class="bg-red-50 border-2 border-red-200 rounded-lg p-6 text-center">
+                            <svg class="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <h3 class="text-2xl font-bold text-red-600 mb-2">Order Not Accepted</h3>
+                            <p class="text-gray-700">We're sorry, but we couldn't accept your order at this time.</p>
+                            <p class="text-sm text-gray-600 mt-4">Please contact us at <a href="tel:+919428638301" class="text-saffron font-semibold hover:underline">+91 94286 38301</a> for more information.</p>
+                        </div>
+                    {% else %}
+                        <!-- Normal Progress Bar -->
+                        <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
+                            {% set progress = namespace(value=0) %}
+                            {% if order.status == 'submitted' %}{% set progress.value = 20 %}{% endif %}
+                            {% if order.status == 'accepted' %}{% set progress.value = 40 %}{% endif %}
+                            {% if order.status == 'fulfilled' %}{% set progress.value = 60 %}{% endif %}
+                            {% if order.status == 'dispatched' %}{% set progress.value = 80 %}{% endif %}
+                            {% if order.status == 'delivered' %}{% set progress.value = 100 %}{% endif %}
+                            <div class="bg-saffron h-3 rounded-full transition-all duration-500" style="width: {{ progress.value }}%"></div>
+                        </div>
+                        <p class="text-center text-gray-600">
+                            <span class="font-semibold text-saffron">{{ progress.value }}%</span> Complete
+                        </p>
+                    {% endif %}
                 </div>
                 
                 <!-- Order Timeline -->
                 <div class="p-8">
+                    {% if order.status != 'rejected' %}
                     <h2 class="text-2xl font-bold text-gray-800 mb-8">Order Status Timeline</h2>
                     
                     <div class="space-y-8">
@@ -183,6 +197,18 @@
                         </div>
                         {% endfor %}
                     </div>
+                    {% else %}
+                    <!-- Rejected Order - No Timeline -->
+                    <div class="text-center">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-4">Order Status</h2>
+                        <p class="text-red-600 font-semibold text-lg mb-2">Unfortunately, your order was not accepted.</p>
+                        <p class="text-gray-600">For assistance or to place a new order, please contact us:</p>
+                        <div class="mt-6 space-y-3">
+                            <a href="tel:+919428638301" class="block text-saffron font-semibold hover:underline">📞 +91 94286 38301</a>
+                            <a href="https://wa.me/919428638301" target="_blank" class="block text-green-600 font-semibold hover:underline">💬 WhatsApp Us</a>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
                 
                 <!-- Order Details -->

@@ -217,29 +217,54 @@ def generate_receipt_pdf(inquiry):
     story.append(Paragraph("ORDER STATUS", heading_style))
     story.append(Spacer(1, 0.1*inch))
     
-    # Status definitions
-    statuses = ['submitted', 'accepted', 'fulfilled', 'dispatched', 'delivered']
-    status_labels = ['Submitted', 'Accepted', 'Fulfilled', 'Dispatched', 'Delivered']
-    current_status_index = statuses.index(inquiry.status) if inquiry.status in statuses else 0
-    
-    status_data = []
-    for i, (status, label) in enumerate(zip(statuses, status_labels)):
-        if i <= current_status_index:
-            status_data.append([f'✓ {label}', ''])
-        else:
-            status_data.append([f'○ {label}', 'Pending'])
-    
-    status_table = Table(status_data, colWidths=[3*inch, 3*inch])
-    status_table.setStyle(TableStyle([
-        ('TEXTCOLOR', (0, 0), (-1, current_status_index), colors.HexColor('#C96A00')),
-        ('TEXTCOLOR', (0, current_status_index + 1), (-1, -1), colors.grey),
-        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, -1), 11),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
-        ('TOPPADDING', (0, 0), (-1, -1), 6),
-    ]))
-    
-    story.append(status_table)
+    # Check if order is rejected
+    if inquiry.status == 'rejected':
+        # Show rejection notice
+        rejection_style = ParagraphStyle(
+            'Rejection',
+            parent=styles['Normal'],
+            fontSize=12,
+            textColor=colors.red,
+            fontName='Helvetica-Bold',
+            alignment=TA_CENTER,
+            spaceAfter=10
+        )
+        story.append(Paragraph("✗ ORDER NOT ACCEPTED", rejection_style))
+        
+        rejection_note_style = ParagraphStyle(
+            'RejectionNote',
+            parent=styles['Normal'],
+            fontSize=10,
+            textColor=colors.black,
+            fontName='Helvetica',
+            alignment=TA_CENTER
+        )
+        story.append(Paragraph("Unfortunately, we were unable to accept this order.", rejection_note_style))
+        story.append(Paragraph(f"Please contact us at {VELORA_ADDRESS['phone']} for more information.", rejection_note_style))
+    else:
+        # Status definitions for normal orders
+        statuses = ['submitted', 'accepted', 'fulfilled', 'dispatched', 'delivered']
+        status_labels = ['Submitted', 'Accepted', 'Fulfilled', 'Dispatched', 'Delivered']
+        current_status_index = statuses.index(inquiry.status) if inquiry.status in statuses else 0
+        
+        status_data = []
+        for i, (status, label) in enumerate(zip(statuses, status_labels)):
+            if i <= current_status_index:
+                status_data.append([f'✓ {label}', ''])
+            else:
+                status_data.append([f'○ {label}', 'Pending'])
+        
+        status_table = Table(status_data, colWidths=[3*inch, 3*inch])
+        status_table.setStyle(TableStyle([
+            ('TEXTCOLOR', (0, 0), (-1, current_status_index), colors.HexColor('#C96A00')),
+            ('TEXTCOLOR', (0, current_status_index + 1), (-1, -1), colors.grey),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 11),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+            ('TOPPADDING', (0, 0), (-1, -1), 6),
+        ]))
+        
+        story.append(status_table)
     story.append(Spacer(1, 0.4*inch))
     
     # Footer
@@ -272,6 +297,7 @@ def get_status_display(status):
     status_map = {
         'submitted': 'Order Submitted',
         'accepted': 'Order Accepted',
+        'rejected': 'Order Not Accepted',
         'fulfilled': 'Order Fulfilled',
         'dispatched': 'Order Dispatched',
         'delivered': 'Order Delivered'
@@ -281,6 +307,8 @@ def get_status_display(status):
 
 def get_status_progress(status):
     """Get status progress percentage."""
+    if status == 'rejected':
+        return 0  # No progress for rejected orders
     statuses = ['submitted', 'accepted', 'fulfilled', 'dispatched', 'delivered']
     if status in statuses:
         index = statuses.index(status)

@@ -39,7 +39,7 @@ class Inquiry(db.Model):
     delivery_state = db.Column(db.String(100), nullable=False)
     delivery_pincode = db.Column(db.String(20), nullable=False)
     
-    status = db.Column(db.String(20), default='submitted', nullable=False)  # submitted, accepted, fulfilled, dispatched, delivered
+    status = db.Column(db.String(20), default='submitted', nullable=False)  # submitted, accepted, rejected, fulfilled, dispatched, delivered
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     

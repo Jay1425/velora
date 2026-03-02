@@ -152,6 +152,8 @@
                                         <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-semibold">Submitted</span>
                                     {% elif inquiry.status == 'accepted' %}
                                         <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">Accepted</span>
+                                    {% elif inquiry.status == 'rejected' %}
+                                        <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-semibold">Rejected</span>
                                     {% elif inquiry.status == 'fulfilled' %}
                                         <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-xs font-semibold">Fulfilled</span>
                                     {% elif inquiry.status == 'dispatched' %}
@@ -166,6 +168,7 @@
                                         <select name="status" class="text-xs px-2 py-1 border border-gray-300 rounded focus:outline-none focus:border-saffron">
                                             <option value="submitted" {% if inquiry.status == 'submitted' %}selected{% endif %}>Submitted</option>
                                             <option value="accepted" {% if inquiry.status == 'accepted' %}selected{% endif %}>Accepted</option>
+                                            <option value="rejected" {% if inquiry.status == 'rejected' %}selected{% endif %}>Rejected</option>
                                             <option value="fulfilled" {% if inquiry.status == 'fulfilled' %}selected{% endif %}>Fulfilled</option>
                                             <option value="dispatched" {% if inquiry.status == 'dispatched' %}selected{% endif %}>Dispatched</option>
                                             <option value="delivered" {% if inquiry.status == 'delivered' %}selected{% endif %}>Delivered</option>
