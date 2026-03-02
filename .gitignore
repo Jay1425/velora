@@ -135,3 +135,6 @@ test_refactored_app.py
 check_deployment_ready.py
 test_csrf.py
 test_forms.py
+test_order_flow.py
+test_receipt.pdf
+migrate_db.py
